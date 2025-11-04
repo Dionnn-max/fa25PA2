@@ -25,30 +25,18 @@ void encodeMessage(const string& filename, string codes[]);
 int main() {
     int freq[26] = {0};
 
-    // Step 1: Read file and count letter frequencies
     buildFrequencyTable(freq, "input.txt");
-
-    // Step 2: Create leaf nodes for each character with nonzero frequency
     int nextFree = createLeafNodes(freq);
-
-    // Step 3: Build encoding tree using your heap
     int root = buildEncodingTree(nextFree);
 
-    // Step 4: Generate binary codes using an STL stack
     string codes[26];
     generateCodes(root, codes);
-
-    // Step 5: Encode the message and print output
     encodeMessage("input.txt", codes);
 
     return 0;
 }
 
-/*------------------------------------------------------
-    Function Definitions (Students will complete logic)
-  ------------------------------------------------------*/
-
-// Step 1: Read file and count frequencies
+// Step 1: Count letters
 void buildFrequencyTable(int freq[], const string& filename) {
     ifstream file(filename);
     if (!file.is_open()) {
@@ -58,16 +46,10 @@ void buildFrequencyTable(int freq[], const string& filename) {
 
     char ch;
     while (file.get(ch)) {
-        // Convert uppercase to lowercase
-        if (ch >= 'A' && ch <= 'Z')
-            ch = ch - 'A' + 'a';
-
-        // Count only lowercase letters
-        if (ch >= 'a' && ch <= 'z')
-            freq[ch - 'a']++;
+        if (ch >= 'A' && ch <= 'Z') ch = ch - 'A' + 'a';
+        if (ch >= 'a' && ch <= 'z') freq[ch - 'a']++;
     }
     file.close();
-
     cout << "Frequency table built successfully.\n";
 }
 
