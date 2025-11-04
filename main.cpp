@@ -8,8 +8,9 @@
 #include "heap.h"
 using namespace std;
 
-// Global arrays for node information
+// Max number of total nodes (letters + parents)
 const int MAX_NODES = 64;
+// Global arrays for node information
 int weightArr[MAX_NODES];
 int leftArr[MAX_NODES];
 int rightArr[MAX_NODES];
@@ -23,7 +24,7 @@ void generateCodes(int root, string codes[]);
 void encodeMessage(const string& filename, string codes[]);
 
 int main() {
-    int freq[26] = {0};
+    int freq[26] = {0}; // store frequency for each letter
 
     buildFrequencyTable(freq, "input.txt");
     int nextFree = createLeafNodes(freq);
@@ -93,15 +94,33 @@ int buildEncodingTree(int nextFree) {
     return heap.pop(weightArr); // root
 }
 
-// Step 4: Use an STL stack to generate codes
+// Step 4: iterative DFS with stack
 void generateCodes(int root, string codes[]) {
-    // TODO:
-    // Use stack<pair<int, string>> to simulate DFS traversal.
-    // Left edge adds '0', right edge adds '1'.
-    // Record code when a leaf node is reached.
+    if (root < 0) return;
+
+    stack<pair<int, string>> st;
+    st.push({root, ""});
+
+    while (!st.empty()) {
+        auto [node, code] = st.top();
+        st.pop();
+
+        if (leftArr[node] == -1 && rightArr[node] == -1) {
+            // leaf node
+            char ch = charArr[node];
+            if (ch >= 'a' && ch <= 'z')
+                codes[ch - 'a'] = code;
+        } else {
+            if (rightArr[node] != -1)
+                st.push({rightArr[node], code + "1"});
+            if (leftArr[node] != -1)
+                st.push({leftArr[node], code + "0"});
+        }
+    }
+    cout << "Codes generated successfully.\n";
 }
 
-// Step 5: Print table and encoded message
+// Step 5: print codes and encoded message
 void encodeMessage(const string& filename, string codes[]) {
     cout << "\nCharacter : Code\n";
     for (int i = 0; i < 26; ++i) {
